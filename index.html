@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://getbootstrap.com/docs/4.1/assets/js/vendor/popper.min.js"></script>
+    <script src="https://getbootstrap.com/docs/4.1/dist/js/bootstrap.min.js"></script>
+    <title>Project NE</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="https://getbootstrap.com/docs/4.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        #code-area, #result-area {
+            width:100%;
+            height:60vh;
+            border: solid 1px;
+        }
+        #url-game, #url-edit {
+            width:100%;
+        }
+    </style>
+
+  </head>
+
+  <body>
+
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+      <a class="navbar-brand" href="#">Project Ne</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarCollapse">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="https://github.com/etilk/Ne">GitHub</a>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <main role="main" class="container">
+        <div class="row">
+            <div class="col-lg" class="code">
+                <textarea id="code-area"></textarea>
+            </div>
+            <div class="col-lg" class="result">
+                <iframe src="javascript:" id="result-area" frameborder="0"></iframe>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg">
+                <button class="button black" id="generate-game">Generate game</button>
+            </div>
+            <div class="col-lg">
+                <label>Game url:</label>
+                <input type="text" value="" id="url-game"/><br/>
+                <label>Edit url:</label>
+                <input type="text" value="" id="url-edit"/>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        $(document).ready(function(){
+            window.gameName=window.location.hash.replace('#','');
+            $.get("uploads/"+window.gameName+".txt", function (data) {
+                $("#code-area").val(data);
+                var url = "https://"+location.host+"/load-game.php?name="+window.gameName;
+                $("#result-area").attr('src', url);
+            });
+            $("#generate-game").click(function() {
+                $.post("generate-game.php?name="+window.gameName, $("#code-area").val() , function (data) {
+                    // success
+                    var url = "https://"+location.host+"/load-game.php?name="+data;
+                    $("#result-area").attr('src', url);
+                    window.gameName = data;
+                    window.location.hash = data;
+                    $("#url-game").val(url);
+                    $("#url-edit").val(location.href);
+                });                
+            });
+        });
+    </script>
+  </body>
+</html>
